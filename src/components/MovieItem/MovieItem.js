@@ -18,7 +18,6 @@ export default class MovieItem extends Component {
 
   updateMovies() {
     this.movieService.getTitles().then((body) => {
-      console.log(body.results);
       this.setState({
         image: `https://image.tmdb.org/t/p/original${body.results[4].poster_path}`,
         name: body.results[4].title,
