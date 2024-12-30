@@ -8,15 +8,19 @@ body {
   justify-content: center;
 }
 
-.movie-app {
+.main {
+  background-color: white;
+  padding-left: 32px;
+  padding-right: 39px;
   width: 1010px;
+  box-sizing: border-box;
+}
+
+.movie-app {
+  width: 938px;
   display: grid;
   grid-template-columns: 451px 451px;
   grid-template-rows: auto;
   gap: 37px;
-  background-color: white;
-  padding-left: 32px;
-  padding-right: 39px;
-  padding-top: 21px;
-  box-sizing: border-box;
+  padding-top: 36px;
 }
