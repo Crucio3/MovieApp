@@ -18,6 +18,7 @@ export default [
         clearInterval: 'readonly',
         clearTimeout: 'readonly',
         setTimeout: 'readonly',
+        window: 'readonly',
       },
       parserOptions: {
         ecmaFeatures: {

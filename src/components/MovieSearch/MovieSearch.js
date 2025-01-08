@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import debounce from 'lodash/debounce.js';
 
 import './MovieSearch.css';
 
@@ -15,23 +16,16 @@ export default class MovieSearch extends Component {
     takeSearchWord(inputValue);
   };
 
-  debounce(func, wait) {
-    let timeout;
-    return function (...args) {
-      const context = this;
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(context, args), wait);
-    };
-  }
-
   render() {
+    const delaySearch = debounce(this.findWord, 500);
+
     return (
       <div className="movie-search">
         <input
           className="movie-search__input"
           placeholder="Type to search..."
           ref={this.inputRef}
-          onChange={this.debounce(this.findWord, 500)}
+          onChange={delaySearch}
         ></input>
       </div>
     );

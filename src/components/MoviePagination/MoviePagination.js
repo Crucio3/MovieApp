@@ -5,7 +5,7 @@ import './MoviePagination.css';
 
 export default class MoviePagination extends Component {
   render() {
-    let { totalResults, setPage } = this.props;
+    let { totalResults, setPage, activePage } = this.props;
 
     return (
       <Pagination
@@ -15,6 +15,7 @@ export default class MoviePagination extends Component {
         pageSize={20}
         defaultCurrent={1}
         total={totalResults}
+        current={activePage}
         onChange={setPage}
       />
     );

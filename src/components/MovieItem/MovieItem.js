@@ -12,6 +12,7 @@ export default class MovieItem extends Component {
 
   state = {
     loading: true,
+    loadingImage: true,
   };
 
   updateMovies = () => {
@@ -20,6 +21,10 @@ export default class MovieItem extends Component {
         loading: false,
       });
     });
+  };
+
+  loadingImage = () => {
+    this.setState({ loadingImage: false });
   };
 
   formatDate = (date) => {
@@ -58,12 +63,17 @@ export default class MovieItem extends Component {
     );
   };
 
+  rate = (value) => {
+    const { sessionId, movieId } = this.props;
+    this.movieService.rateMovie(value, movieId, sessionId);
+  };
+
   componentDidMount() {
     this.updateMovies();
   }
 
   render() {
-    const { loading } = this.state;
+    const { loading, loadingImage } = this.state;
     const { movie } = this.props;
 
     if (!movie) {
@@ -101,23 +111,67 @@ export default class MovieItem extends Component {
       </div>
     ) : null;
 
-    const inform = !loading ? (
-      <Fragment>
-        <div className="movie-item__img-container">
-          <img src={`https://image.tmdb.org/t/p/original${movie.poster_path}`} className="movie-item__img" alt=""></img>
-        </div>
-        <div className="movie-item__inform">
-          <div className="movie-item__name">{movie.title}</div>
-          <div className="movie-item__date">{date}</div>
-          <div className="movie-item__genres">{this.getGenres()}</div>
-          <div className="movie-item__description">{overview}</div>
-          <Rate className="movie-item__rate" count={10} />
-          <div className="movie-item__rating" style={styles}>
-            {movie.vote_average}
+    let inform = null;
+
+    const spinerImage = loadingImage ? <Spin></Spin> : null;
+
+    let imageSrc;
+
+    if (movie.poster_path === null) {
+      imageSrc =
+        'https://imgholder.ru/240x364/8493a8/adb9ca&text=%D0%9A%D0%B0%D1%80%D1%82%D0%B8%D0%BD%D0%BA%D0%B8+%D0%BD%D0%B5%D1%82&font=kelson';
+    } else {
+      imageSrc = `https://image.tmdb.org/t/p/original${movie.poster_path}`;
+    }
+
+    if (!loading && window.innerWidth >= 768) {
+      inform = (
+        <Fragment>
+          <div className="movie-item__img-container">
+            {spinerImage}
+            <img
+              src={imageSrc}
+              className="movie-item__img"
+              alt=""
+              onLoad={this.loadingImage}
+              style={loadingImage ? { display: 'none' } : { display: 'block' }}
+            ></img>
           </div>
-        </div>
-      </Fragment>
-    ) : null;
+          <div className="movie-item__inform">
+            <div className="movie-item__name">{movie.title}</div>
+            <div className="movie-item__date">{date}</div>
+            <div className="movie-item__genres">{this.getGenres()}</div>
+            <div className="movie-item__description">{overview}</div>
+            <Rate className="movie-item__rate" count={10} onChange={this.rate} />
+            <div className="movie-item__rating" style={styles}>
+              {Number(movie.vote_average.toFixed(1))}
+            </div>
+          </div>
+        </Fragment>
+      );
+    } else if (!loading && window.innerWidth < 768) {
+      inform = (
+        <Fragment>
+          <div className="movie-item__mobile-position">
+            <div className="movie-item__img-container">
+              <img src={imageSrc} className="movie-item__img" alt="" />
+            </div>
+            <div className="movie-item__inform">
+              <div className="movie-item__name">{movie.title}</div>
+              <div className="movie-item__date">{date}</div>
+              <div className="movie-item__genres">{this.getGenres()}</div>
+              <div className="movie-item__rating" style={styles}>
+                {Number(movie.vote_average.toFixed(1))}
+              </div>
+            </div>
+          </div>
+          <div className="movie-item__description">{overview}</div>
+          <Rate className="movie-item__rate" count={10} onChange={this.rate} />
+        </Fragment>
+      );
+    } else {
+      inform = null;
+    }
 
     return (
       <div className="movie-item">
