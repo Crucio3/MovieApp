@@ -10,11 +10,13 @@ import MovieService from './service/MovieService/MovieService.js';
 import MovieSearch from './components/MovieSearch/MovieSearch.js';
 import MoviePagination from './components/MoviePagination/MoviePagination.js';
 import Header from './components/Header/Header.js';
+import GetRatedMovies from './components/GetRatedMovies/GetRatedMovies.js';
+import GetSearchMovies from './components/GetSearchMovies/GetSearchMovies.js';
 import { MovieProvider } from './components/MovieContext/MovieContext.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-class MovieApp extends Component {
+export default class MovieApp extends Component {
   movieService = new MovieService();
 
   state = {
@@ -47,16 +49,21 @@ class MovieApp extends Component {
     this.setState({ error: true, movies: [], totalResults: 0 });
   };
 
+  stateUpdate = (results, total_results, page) => {
+    this.setState(() => {
+      if (page === undefined) {
+        return { movies: results, totalResults: total_results };
+      } else {
+        return { movies: results, totalResults: total_results, page: page };
+      }
+    });
+  };
+
   componentDidMount() {
     this.movieService
       .getPopularTitles(this.state.page)
       .then((body) => {
-        this.setState(
-          () => {
-            return { movies: body.results, totalResults: body.total_results };
-          },
-          () => {}
-        );
+        this.stateUpdate(body.results, body.total_results);
       })
       .catch(this.onError);
     this.movieService.getGenres().then((body) => {
@@ -69,91 +76,6 @@ class MovieApp extends Component {
         this.setState({ sessionId: body.guest_session_id });
       })
       .catch(this.onError);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.page !== this.state.page) {
-      if (this.state.searchMovie === '' && this.state.activeTab === 'Search') {
-        window.scrollTo(0, 0);
-        this.movieService
-          .getPopularTitles(this.state.page)
-          .then((body) => {
-            this.setState(
-              () => {
-                return { movies: body.results, totalResults: body.total_results };
-              },
-              () => {}
-            );
-          })
-          .catch(this.onError);
-      } else if (this.state.searchMovie !== '' && this.state.activeTab === 'Search') {
-        this.movieService
-          .searchTitle(this.state.page, this.state.searchMovie)
-          .then((body) => {
-            this.setState(
-              () => {
-                return { movies: body.results, totalResults: body.total_results };
-              },
-              () => {}
-            );
-          })
-          .catch(this.onError);
-      } else if (this.state.activeTab === 'Rated') {
-        this.movieService
-          .ratedList(this.state.sessionId, this.state.page)
-          .then((body) => {
-            this.setState(
-              () => {
-                return { movies: body.results, totalResults: body.total_results };
-              },
-              () => {}
-            );
-          })
-          .catch(this.onError);
-      }
-    }
-
-    if (prevState.searchMovie !== this.state.searchMovie) {
-      this.movieService
-        .searchTitle(1, this.state.searchMovie)
-        .then((body) => {
-          this.setState(
-            () => {
-              return { movies: body.results, totalResults: body.total_results, page: 1 };
-            },
-            () => {}
-          );
-        })
-        .catch(this.onError);
-    }
-
-    if (prevState.activeTab !== this.state.activeTab && this.state.activeTab === 'Rated') {
-      this.movieService
-        .ratedList(this.state.sessionId, 1)
-        .then((body) => {
-          this.setState(
-            () => {
-              return { movies: body.results, totalResults: body.total_results, page: 1 };
-            },
-            () => {}
-          );
-        })
-        .catch(this.onError);
-    }
-
-    if (prevState.activeTab !== this.state.activeTab && this.state.activeTab === 'Search') {
-      this.movieService
-        .getPopularTitles(1)
-        .then((body) => {
-          this.setState(
-            () => {
-              return { movies: body.results, totalResults: body.total_results };
-            },
-            () => {}
-          );
-        })
-        .catch(this.onError);
-    }
   }
 
   setPage = (page) => {
@@ -193,6 +115,18 @@ class MovieApp extends Component {
     return (
       <div className="main">
         <Online>
+          <GetSearchMovies
+            searchMovie={this.state.searchMovie}
+            activeTab={this.state.activeTab}
+            stateUpdate={this.stateUpdate}
+            page={this.state.page}
+          />
+          <GetRatedMovies
+            activeTab={this.state.activeTab}
+            stateUpdate={this.stateUpdate}
+            page={this.state.page}
+            sessionId={this.state.sessionId}
+          />
           <Header takeTab={this.takeTab} />
           <MovieProvider value={{ genres: this.state.genres }}>
             {search}
