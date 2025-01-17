@@ -20,14 +20,14 @@ export default class GetSearchMovies extends Component {
           .then((body) => {
             this.props.stateUpdate(body.results, body.total_results);
           })
-          .catch(this.onError);
+          .catch(this.props.onError);
       } else if (this.props.searchMovie !== '' && this.props.activeTab === 'Search') {
         this.movieService
           .searchTitle(this.props.page, this.props.searchMovie)
           .then((body) => {
             this.props.stateUpdate(body.results, body.total_results);
           })
-          .catch(this.onError);
+          .catch(this.props.onError);
       }
     }
   }

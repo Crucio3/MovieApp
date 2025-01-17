@@ -120,12 +120,14 @@ export default class MovieApp extends Component {
             activeTab={this.state.activeTab}
             stateUpdate={this.stateUpdate}
             page={this.state.page}
+            onError={this.onError}
           />
           <GetRatedMovies
             activeTab={this.state.activeTab}
             stateUpdate={this.stateUpdate}
             page={this.state.page}
             sessionId={this.state.sessionId}
+            onError={this.onError}
           />
           <Header takeTab={this.takeTab} />
           <MovieProvider value={{ genres: this.state.genres }}>

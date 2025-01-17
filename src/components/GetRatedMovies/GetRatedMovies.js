@@ -13,7 +13,7 @@ export default class GetRatedMovies extends Component {
           .then((body) => {
             this.props.stateUpdate(body.results, body.total_results);
           })
-          .catch(this.onError);
+          .catch(this.props.onError);
       }
     }
 
@@ -23,7 +23,7 @@ export default class GetRatedMovies extends Component {
         .then((body) => {
           this.props.stateUpdate(body.results, body.total_results, 1);
         })
-        .catch(this.onError);
+        .catch(this.props.onError);
     }
 
     if (prevProps.activeTab !== this.props.activeTab && this.props.activeTab === 'Search') {
@@ -32,7 +32,7 @@ export default class GetRatedMovies extends Component {
         .then((body) => {
           this.props.stateUpdate(body.results, body.total_results);
         })
-        .catch(this.onError);
+        .catch(this.props.onError);
     }
   }
 
